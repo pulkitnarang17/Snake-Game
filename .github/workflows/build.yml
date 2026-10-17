@@ -1,0 +1,36 @@
+name: Build and Deploy Wasm to Vercel
+
+on:
+  push:
+    branches: [ main, master ]
+  workflow_dispatch:
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout Code
+        uses: actions/checkout@v4
+
+      - name: Setup Emscripten (Wasm Compiler)
+        uses: mymindstorm/setup-emsdk@v14
+        with:
+          version: latest
+
+      - name: Compile C++ to WebAssembly
+        run: |
+          em++ -std=c++17 -O3 game_wasm.cpp -o snake.js \
+            -s MODULARIZE=1 \
+            -s EXPORT_NAME="createSnakeModule" \
+            -s EXPORTED_FUNCTIONS='["_initGame","_setDirection","_updateGame","_getHeadX","_getHeadY","_getFruitX","_getFruitY","_getScore","_isGameOver","_getBodyLength","_getBodyX","_getBodyY"]' \
+            -s EXPORTED_RUNTIME_METHODS='["ccall","cwrap"]'
+
+      - name: Upload Build Artifacts
+        uses: actions/upload-artifact@v4
+        with:
+          name: game-files
+          path: |
+            index.html
+            snake.js
+            snake.wasm
