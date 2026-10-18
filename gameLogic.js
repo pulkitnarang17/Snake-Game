@@ -1,16 +1,22 @@
 const canvas = document.getElementById("canvas");
 const ctx = canvas.getContext("2d");
 const scoreEl = document.getElementById("score");
+const hiScoreEl = document.getElementById("hi-score");
 const msgEl = document.getElementById("msg");
 
 const CELL_SIZE = 20;
+
+// LocalStorage se saved High Score load karo
+let highScore = parseInt(localStorage.getItem("snake_hi_score") || "0", 10);
+if (hiScoreEl) {
+  hiScoreEl.innerText = String(highScore).padStart(4, '0');
+}
 
 let wasm;
 let initGame, setDirection, updateGame;
 let getHeadX, getHeadY, getFruitX, getFruitY;
 let getScore, isGameOver, getBodyLength, getBodyX, getBodyY;
 
-// Initialize WebAssembly module exported by Emscripten
 createSnakeModule().then((module) => {
   wasm = module;
 
@@ -65,7 +71,7 @@ window.addEventListener("keydown", (e) => {
   else if (k === 'r' || k === '5' || k === 'enter') resetGame();
 });
 
-// Touch Screen Swipes (Direct LCD Interaction)
+// Touch Screen Swipes
 let touchX = 0;
 let touchY = 0;
 
@@ -85,7 +91,7 @@ canvas.addEventListener("touchend", (e) => {
   }
 }, { passive: true });
 
-// Main Render & Tick Loop
+// Game Loop
 function gameTick() {
   if (!updateGame) return;
 
@@ -94,6 +100,15 @@ function gameTick() {
   const score = getScore();
   const over = isGameOver();
   scoreEl.innerText = String(score).padStart(4, '0');
+
+  // Check aur update High Score
+  if (score > highScore) {
+    highScore = score;
+    localStorage.setItem("snake_hi_score", highScore);
+    if (hiScoreEl) {
+      hiScoreEl.innerText = String(highScore).padStart(4, '0');
+    }
+  }
 
   if (over) {
     msgEl.innerText = "DEAD! [5]";
