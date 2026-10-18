@@ -3,533 +3,375 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-  <title>Ouroboros — Embedded C++ Arcade</title>
-  
+  <title>Snake II — 3310 Edition</title>
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link href="https://fonts.googleapis.com/css2?family=Chivo+Mono:ital,wght@0,300;0,400;0,600;0,800;1,400&family=Instrument+Serif:ital@0;1&display=swap" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=VT323&display=swap" rel="stylesheet">
 
   <style>
     :root {
-      --bg: #0e0d0b;
-      --paper: #171512;
-      --ink: #e8e3d9;
-      --muted: #807a70;
-      --rule: #292520;
-      --accent: #d84315;
-      --accent-dim: #3a150b;
-      --lead: #35a852;
-      
-      --font-serif: "Instrument Serif", Georgia, serif;
-      --font-mono: "Chivo Mono", monospace;
-      
-      --space-1: 4px;
-      --space-2: 8px;
-      --space-3: 16px;
-      --space-4: 24px;
-      --space-5: 32px;
-      --space-6: 48px;
+      --lcd-bg: #97b538;
+      --lcd-pixel: #162607;
+      --phone-body: #1e3a5f;
+      --phone-trim: #c4c9d0;
+      --btn-color: #314455;
+      --btn-label: #e2e8f0;
+      --font-retro: 'VT323', monospace;
     }
 
     * {
       box-sizing: border-box;
       margin: 0;
       padding: 0;
-      -webkit-tap-highlight-color: transparent;
+      user-select: none;
+      -webkit-user-select: none;
+      touch-action: manipulation;
     }
 
     body {
-      background-color: var(--bg);
-      color: var(--ink);
-      font-family: var(--font-mono);
-      font-size: 13px;
-      line-height: 1.5;
-      letter-spacing: -0.01em;
+      background: #11141a;
       min-height: 100vh;
       display: flex;
       flex-direction: column;
-      justify-content: space-between;
-      overflow-x: hidden;
+      align-items: center;
+      justify-content: center;
+      font-family: var(--font-retro);
+      padding: 10px;
     }
 
-    /* Masthead */
-    header {
-      border-bottom: 1px solid var(--rule);
-      padding: var(--space-3) var(--space-4);
-      display: flex;
-      justify-content: space-between;
-      align-items: baseline;
-      background: var(--bg);
-    }
-
-    .brand {
-      display: flex;
-      align-items: baseline;
-      gap: var(--space-2);
-    }
-
-    .brand h1 {
-      font-family: var(--font-serif);
-      font-weight: 400;
-      font-size: 28px;
-      letter-spacing: -0.02em;
-      line-height: 1;
-      color: var(--ink);
-    }
-
-    .badge-wasm {
-      font-size: 10px;
-      letter-spacing: 0.08em;
-      text-transform: uppercase;
-      padding: 2px 6px;
-      border: 1px solid var(--rule);
-      color: var(--muted);
-      background: var(--paper);
-    }
-
-    .clock {
-      color: var(--muted);
-      font-size: 11px;
-      font-variant-numeric: tabular-nums;
-    }
-
-    /* Main Editorial Stage */
-    main {
-      flex: 1;
-      display: grid;
-      grid-template-columns: 1fr;
-      max-width: 1040px;
+    /* Outer Phone Shell (Nokia 3310 Silhouette) */
+    .phone-body {
+      background: var(--phone-body);
+      border: 4px solid #0f1c2d;
+      border-radius: 42px 42px 55px 55px;
+      padding: 24px 20px 28px;
       width: 100%;
-      margin: 0 auto;
-      padding: var(--space-4);
-      gap: var(--space-5);
-    }
-
-    @media (min-width: 820px) {
-      main {
-        grid-template-columns: 310px 1fr;
-        padding: var(--space-6) var(--space-4);
-        align-items: start;
-      }
-    }
-
-    /* Sidebar Column */
-    .col-spec {
-      display: flex;
-      flex-direction: column;
-      gap: var(--space-4);
-    }
-
-    .manifesto {
-      font-family: var(--font-serif);
-      font-size: 20px;
-      line-height: 1.25;
-      color: var(--muted);
-      font-style: italic;
-    }
-
-    .manifesto span {
-      color: var(--ink);
-      font-style: normal;
-    }
-
-    .telemetry-card {
-      border: 1px solid var(--rule);
-      background: var(--paper);
-      padding: var(--space-3);
-    }
-
-    .telemetry-row {
-      display: flex;
-      justify-content: space-between;
-      padding: var(--space-2) 0;
-      border-bottom: 1px dashed var(--rule);
-      font-size: 11px;
-    }
-
-    .telemetry-row:last-child {
-      border-bottom: none;
-      padding-bottom: 0;
-    }
-
-    .telemetry-row span:first-child {
-      color: var(--muted);
-      text-transform: uppercase;
-      letter-spacing: 0.04em;
-    }
-
-    .telemetry-row span:last-child {
-      font-weight: 600;
-      color: var(--ink);
-      font-variant-numeric: tabular-nums;
-    }
-
-    .telemetry-row.highlight span:last-child {
-      color: var(--accent);
-    }
-
-    .manual {
-      color: var(--muted);
-      font-size: 11px;
-      line-height: 1.6;
-    }
-
-    .manual kbd {
-      background: var(--bg);
-      border: 1px solid var(--rule);
-      padding: 1px 5px;
-      color: var(--ink);
-      font-family: var(--font-mono);
-      font-size: 10px;
-    }
-
-    /* Board Presentation */
-    .col-screen {
+      max-width: 340px;
       display: flex;
       flex-direction: column;
       align-items: center;
-      gap: var(--space-3);
+      box-shadow: 0 20px 50px rgba(0, 0, 0, 0.8), inset 0 2px 4px rgba(255, 255, 255, 0.2);
     }
 
-    .viewport-bezel {
-      border: 1px solid var(--rule);
-      background: var(--paper);
-      padding: var(--space-2);
+    .speaker-grill {
+      width: 48px;
+      height: 6px;
+      background: #0f1c2d;
+      border-radius: 3px;
+      margin-bottom: 12px;
+    }
+
+    .brand-logo {
+      color: var(--phone-trim);
+      font-family: sans-serif;
+      font-weight: 800;
+      letter-spacing: 4px;
+      font-size: 13px;
+      margin-bottom: 12px;
+      text-transform: uppercase;
+      opacity: 0.85;
+    }
+
+    /* Nokia Monochrome Screen Bezel */
+    .screen-bezel {
+      background: #505c68;
+      border: 3px solid #28333e;
+      border-radius: 14px;
+      padding: 10px;
       width: 100%;
-      max-width: 440px;
+      box-shadow: inset 0 4px 10px rgba(0, 0, 0, 0.5);
+    }
+
+    /* Green Monochrome LCD Display */
+    .lcd-screen {
+      background: var(--lcd-bg);
+      border: 2px solid #5d741d;
+      border-radius: 4px;
+      padding: 6px 8px;
       position: relative;
+      box-shadow: inset 0 0 10px rgba(0, 0, 0, 0.2);
     }
 
-    .viewport-bezel::before,
-    .viewport-bezel::after {
-      content: "•";
-      position: absolute;
-      color: var(--rule);
-      font-size: 14px;
-      line-height: 0;
+    .lcd-header {
+      display: flex;
+      justify-content: space-between;
+      color: var(--lcd-pixel);
+      font-size: 20px;
+      line-height: 1;
+      margin-bottom: 4px;
+      border-bottom: 2px dashed #7a942a;
+      padding-bottom: 2px;
     }
-    .viewport-bezel::before { top: 6px; left: 6px; }
-    .viewport-bezel::after { bottom: 6px; right: 6px; }
 
-    #stage {
+    canvas {
       display: block;
       width: 100%;
       aspect-ratio: 1 / 1;
-      background: var(--bg);
-      border: 1px solid var(--rule);
-      cursor: crosshair;
+      background: var(--lcd-bg);
+      image-rendering: pixelated;
     }
 
-    .state-banner {
-      width: 100%;
-      max-width: 440px;
+    .lcd-footer {
       display: flex;
       justify-content: space-between;
-      align-items: center;
-      padding: var(--space-2) var(--space-1);
-      font-size: 11px;
-      letter-spacing: 0.04em;
-      text-transform: uppercase;
+      color: var(--lcd-pixel);
+      font-size: 16px;
+      margin-top: 4px;
+      font-weight: bold;
     }
 
-    #status-line {
-      color: var(--lead);
+    /* Keypad Area */
+    .keypad {
+      width: 100%;
+      margin-top: 18px;
+      display: flex;
+      flex-direction: column;
+      gap: 8px;
     }
 
-    #status-line.dead {
-      color: var(--accent);
+    .soft-keys {
+      display: flex;
+      justify-content: space-between;
+      margin-bottom: 4px;
+      padding: 0 8px;
     }
 
-    /* Tactile Thumb Deck */
-    .dpad {
+    .btn-soft {
+      background: #475a6c;
+      color: var(--btn-label);
+      border: none;
+      border-radius: 8px;
+      width: 60px;
+      height: 26px;
+      font-family: sans-serif;
+      font-size: 10px;
+      font-weight: bold;
+      cursor: pointer;
+      box-shadow: 0 3px 0 #1e2832;
+    }
+
+    .btn-soft:active {
+      transform: translateY(2px);
+      box-shadow: 0 1px 0 #1e2832;
+    }
+
+    .grid-keys {
       display: grid;
-      grid-template-columns: repeat(3, 52px);
-      grid-template-rows: repeat(2, 44px);
-      gap: var(--space-1);
-      margin-top: var(--space-2);
-    }
-
-    @media (min-width: 820px) {
-      .dpad {
-        display: none;
-      }
+      grid-template-columns: repeat(3, 1fr);
+      gap: 7px;
     }
 
     .key {
-      background: var(--paper);
-      border: 1px solid var(--rule);
-      color: var(--ink);
-      font-family: var(--font-mono);
-      font-size: 12px;
+      background: var(--btn-color);
+      color: var(--btn-label);
+      border: 1px solid #1a2530;
+      border-radius: 12px;
+      height: 44px;
       display: flex;
+      flex-direction: column;
       align-items: center;
       justify-content: center;
       cursor: pointer;
+      box-shadow: 0 4px 0 #151f28;
+      transition: transform 0.05s;
     }
 
     .key:active {
-      background: var(--ink);
-      color: var(--bg);
+      transform: translateY(3px);
+      box-shadow: 0 1px 0 #151f28;
+      background: #445c74;
     }
 
-    .key-u { grid-column: 2; grid-row: 1; }
-    .key-l { grid-column: 1; grid-row: 2; }
-    .key-d { grid-column: 2; grid-row: 2; }
-    .key-r { grid-column: 3; grid-row: 2; }
-
-    /* Colophon / Bottom Line */
-    footer {
-      border-top: 1px solid var(--rule);
-      padding: var(--space-3) var(--space-4);
-      display: flex;
-      flex-wrap: wrap;
-      justify-content: space-between;
-      gap: var(--space-2);
-      color: var(--muted);
-      font-size: 11px;
-      background: var(--bg);
+    .key .num {
+      font-size: 20px;
+      line-height: 1;
+      font-weight: bold;
     }
 
-    footer a {
-      color: var(--muted);
-      text-decoration: underline;
-      text-underline-offset: 3px;
+    .key .sub {
+      font-family: sans-serif;
+      font-size: 8px;
+      letter-spacing: 0.5px;
+      opacity: 0.6;
     }
 
-    footer a:hover {
-      color: var(--ink);
+    .key-active-nav {
+      background: #25394d;
+      border-color: #4a6785;
     }
   </style>
 </head>
 <body>
 
-  <header>
-    <div class="brand">
-      <h1>Ouroboros</h1>
-      <span class="badge-wasm">WASM // C++17</span>
+  <div class="phone-body">
+    <div class="speaker-grill"></div>
+    <div class="brand-logo">NOKIA</div>
+
+    <!-- Screen Section -->
+    <div class="screen-bezel">
+      <div class="lcd-screen">
+        <div class="lcd-header">
+          <span>SNAKE II</span>
+          <span id="score">0000</span>
+        </div>
+        <canvas id="canvas" width="400" height="400"></canvas>
+        <div class="lcd-footer">
+          <span id="msg">READY</span>
+          <span>◄►▲▼</span>
+        </div>
+      </div>
     </div>
-    <div class="clock" id="session-clock">00:00:00</div>
-  </header>
 
-  <main>
-    <aside class="col-spec">
-      <p class="manifesto">
-        Discrete deterministic motion rendered on an orthogonal 20×20 grid. 
-        <span>Compiled directly from native heap-allocated memory.</span>
-      </p>
-
-      <div class="telemetry-card">
-        <div class="telemetry-row highlight">
-          <span>Tally</span>
-          <span id="stat-score">000</span>
-        </div>
-        <div class="telemetry-row">
-          <span>Payload Units</span>
-          <span id="stat-len">00</span>
-        </div>
-        <div class="telemetry-row">
-          <span>Engine Status</span>
-          <span id="stat-engine">Mounting</span>
-        </div>
-        <div class="telemetry-row">
-          <span>Cycle Rate</span>
-          <span>8.00 Hz</span>
-        </div>
+    <!-- Classic Keypad Section -->
+    <div class="keypad">
+      <div class="soft-keys">
+        <button class="btn-soft" onclick="resetGame()">RESET</button>
+        <button class="btn-soft" onclick="resetGame()">PLAY</button>
       </div>
 
-      <div class="manual">
-        Vector shifts registered via <kbd>W</kbd> <kbd>A</kbd> <kbd>S</kbd> <kbd>D</kbd> or cursor keys. Re-arm dead engine with <kbd>R</kbd> or screen tap.
-      </div>
-    </aside>
+      <div class="grid-keys">
+        <button class="key" onclick="noop()"><span class="num">1</span><span class="sub">--</span></button>
+        <button class="key key-active-nav" onclick="sendDirection(1)"><span class="num">2</span><span class="sub">▲ UP</span></button>
+        <button class="key" onclick="noop()"><span class="num">3</span><span class="sub">DEF</span></button>
 
-    <section class="col-screen">
-      <div class="viewport-bezel">
-        <canvas id="stage" width="400" height="400" aria-label="Monochrome Snake grid running WebAssembly"></canvas>
-      </div>
+        <button class="key key-active-nav" onclick="sendDirection(3)"><span class="num">4</span><span class="sub">◀ LEFT</span></button>
+        <button class="key" onclick="resetGame()"><span class="num">5</span><span class="sub">OK</span></button>
+        <button class="key key-active-nav" onclick="sendDirection(4)"><span class="num">6</span><span class="sub">RIGHT ▶</span></button>
 
-      <div class="state-banner">
-        <span id="status-line">Sys.Ready</span>
-        <span style="color: var(--muted)">20x20 Field</span>
-      </div>
+        <button class="key" onclick="noop()"><span class="num">7</span><span class="sub">PQRS</span></button>
+        <button class="key key-active-nav" onclick="sendDirection(2)"><span class="num">8</span><span class="sub">▼ DOWN</span></button>
+        <button class="key" onclick="noop()"><span class="num">9</span><span class="sub">WXYZ</span></button>
 
-      <div class="dpad" role="group" aria-label="Directional controls">
-        <button class="key key-u" onclick="inputDir(1)" aria-label="North">N</button>
-        <button class="key key-l" onclick="inputDir(3)" aria-label="West">W</button>
-        <button class="key key-d" onclick="inputDir(2)" aria-label="South">S</button>
-        <button class="key key-r" onclick="inputDir(4)" aria-label="East">E</button>
+        <button class="key" onclick="noop()"><span class="num">*</span><span class="sub">+</span></button>
+        <button class="key" onclick="noop()"><span class="num">0</span><span class="sub">␣</span></button>
+        <button class="key" onclick="noop()"><span class="num">#</span><span class="sub">⇧</span></button>
       </div>
-    </section>
-  </main>
-
-  <footer>
-    <div>Execution Thread: Direct WebAssembly VM</div>
-    <div>Zero Garbage Collection Spikes</div>
-  </footer>
+    </div>
+  </div>
 
   <script src="snake.js"></script>
   <script>
-    const canvas = document.getElementById("stage");
+    const canvas = document.getElementById("canvas");
     const ctx = canvas.getContext("2d");
-    
-    const scoreVal = document.getElementById("stat-score");
-    const lenVal = document.getElementById("stat-len");
-    const engineVal = document.getElementById("stat-engine");
-    const statusLine = document.getElementById("status-line");
-    const clockEl = document.getElementById("session-clock");
+    const scoreEl = document.getElementById("score");
+    const msgEl = document.getElementById("msg");
 
-    const CELL = 20;
-    const GRID_SIZE = 20;
+    const CELL_SIZE = 20;
 
     let wasm;
-    let _initGame, _setDirection, _updateGame;
-    let _getHeadX, _getHeadY, _getFruitX, _getFruitY;
-    let _getScore, _isGameOver, _getBodyLength, _getBodyX, _getBodyY;
+    let initGame, setDirection, updateGame;
+    let getHeadX, getHeadY, getFruitX, getFruitY;
+    let getScore, isGameOver, getBodyLength, getBodyX, getBodyY;
 
-    // Session stopwatch
-    const startTime = Date.now();
-    setInterval(() => {
-      const elapsed = Math.floor((Date.now() - startTime) / 1000);
-      const h = String(Math.floor(elapsed / 3600)).padStart(2, '0');
-      const m = String(Math.floor((elapsed % 3600) / 60)).padStart(2, '0');
-      const s = String(elapsed % 60).padStart(2, '0');
-      clockEl.textContent = `${h}:${m}:${s}`;
-    }, 1000);
+    // Load C++ WebAssembly Module
+    createSnakeModule().then((module) => {
+      wasm = module;
 
-    createSnakeModule().then((mod) => {
-      wasm = mod;
+      initGame = wasm.cwrap('initGame', null, []);
+      setDirection = wasm.cwrap('setDirection', null, ['number']);
+      updateGame = wasm.cwrap('updateGame', null, []);
+      getHeadX = wasm.cwrap('getHeadX', 'number', []);
+      getHeadY = wasm.cwrap('getHeadY', 'number', []);
+      getFruitX = wasm.cwrap('getFruitX', 'number', []);
+      getFruitY = wasm.cwrap('getFruitY', 'number', []);
+      getScore = wasm.cwrap('getScore', 'number', []);
+      isGameOver = wasm.cwrap('isGameOver', 'number', []);
+      getBodyLength = wasm.cwrap('getBodyLength', 'number', []);
+      getBodyX = wasm.cwrap('getBodyX', 'number', ['number']);
+      getBodyY = wasm.cwrap('getBodyY', 'number', ['number']);
 
-      _initGame = wasm.cwrap('initGame', null, []);
-      _setDirection = wasm.cwrap('setDirection', null, ['number']);
-      _updateGame = wasm.cwrap('updateGame', null, []);
-      _getHeadX = wasm.cwrap('getHeadX', 'number', []);
-      _getHeadY = wasm.cwrap('getHeadY', 'number', []);
-      _getFruitX = wasm.cwrap('getFruitX', 'number', []);
-      _getFruitY = wasm.cwrap('getFruitY', 'number', []);
-      _getScore = wasm.cwrap('getScore', 'number', []);
-      _isGameOver = wasm.cwrap('isGameOver', 'number', []);
-      _getBodyLength = wasm.cwrap('getBodyLength', 'number', []);
-      _getBodyX = wasm.cwrap('getBodyX', 'number', ['number']);
-      _getBodyY = wasm.cwrap('getBodyY', 'number', ['number']);
-
-      _initGame();
-      engineVal.textContent = "Nominal";
-      statusLine.textContent = "Live Stream Active";
-
-      setInterval(tick, 125);
-    }).catch((err) => {
-      engineVal.textContent = "Fault";
-      statusLine.textContent = "Kernel Panic";
-      statusLine.classList.add("dead");
+      initGame();
+      msgEl.innerText = "RUNNING";
+      setInterval(gameTick, 130);
+    }).catch(err => {
       console.error(err);
+      msgEl.innerText = "ERR";
     });
 
-    function inputDir(d) {
-      if (_setDirection) _setDirection(d);
+    function sendDirection(dir) {
+      if (setDirection) setDirection(dir);
     }
 
-    function rearm() {
-      if (_initGame) {
-        _initGame();
-        statusLine.textContent = "Live Stream Active";
-        statusLine.classList.remove("dead");
+    function resetGame() {
+      if (initGame) {
+        initGame();
+        msgEl.innerText = "RUNNING";
       }
     }
 
+    function noop() {}
+
+    // Keypad Support: Supports both WASD/Arrows AND Numpad 2/4/6/8
     window.addEventListener("keydown", (e) => {
       const k = e.key.toLowerCase();
-      if (k === 'w' || k === 'arrowup') inputDir(1);
-      else if (k === 's' || k === 'arrowdown') inputDir(2);
-      else if (k === 'a' || k === 'arrowleft') inputDir(3);
-      else if (k === 'd' || k === 'arrowright') inputDir(4);
-      else if (k === 'r') rearm();
+      if (k === 'w' || k === 'arrowup' || k === '2') sendDirection(1);
+      else if (k === 's' || k === 'arrowdown' || k === '8') sendDirection(2);
+      else if (k === 'a' || k === 'arrowleft' || k === '4') sendDirection(3);
+      else if (k === 'd' || k === 'arrowright' || k === '6') sendDirection(4);
+      else if (k === 'r' || k === '5' || k === 'enter') resetGame();
     });
 
-    // Mobile swipe gestures
-    let x0 = null, y0 = null;
+    // Touch Swipe gestures right on LCD screen
+    let touchX = 0, touchY = 0;
     canvas.addEventListener("touchstart", (e) => {
-      x0 = e.touches[0].clientX;
-      y0 = e.touches[0].clientY;
+      touchX = e.touches[0].clientX;
+      touchY = e.touches[0].clientY;
     }, { passive: true });
 
     canvas.addEventListener("touchend", (e) => {
-      if (!x0 || !y0) return;
-      const dx = e.changedTouches[0].clientX - x0;
-      const dy = e.changedTouches[0].clientY - y0;
-      
-      if (Math.hypot(dx, dy) < 20) {
-        rearm();
-        return;
-      }
-      
+      const dx = e.changedTouches[0].clientX - touchX;
+      const dy = e.changedTouches[0].clientY - touchY;
       if (Math.abs(dx) > Math.abs(dy)) {
-        inputDir(dx > 0 ? 4 : 3);
+        if (Math.abs(dx) > 20) sendDirection(dx > 0 ? 4 : 3);
       } else {
-        inputDir(dy > 0 ? 2 : 1);
+        if (Math.abs(dy) > 20) sendDirection(dy > 0 ? 2 : 1);
       }
-      x0 = null;
-      y0 = null;
     }, { passive: true });
 
-    function renderField() {
-      ctx.fillStyle = "#0e0d0b";
+    function gameTick() {
+      updateGame();
+
+      const score = getScore();
+      const over = isGameOver();
+      scoreEl.innerText = String(score).padStart(4, '0');
+
+      if (over) {
+        msgEl.innerText = "DEAD! [5]";
+      }
+
+      // Draw Retro Monochrome Pixels
+      ctx.fillStyle = "#97b538"; // LCD Green
       ctx.fillRect(0, 0, canvas.width, canvas.height);
 
-      // Fine coordinate grid lines
-      ctx.strokeStyle = "#1b1916";
-      ctx.lineWidth = 1;
-      ctx.beginPath();
-      for (let i = 0; i <= GRID_SIZE; i++) {
-        ctx.moveTo(i * CELL, 0);
-        ctx.lineTo(i * CELL, canvas.height);
-        ctx.moveTo(0, i * CELL);
-        ctx.lineTo(canvas.width, i * CELL);
-      }
-      ctx.stroke();
+      // LCD Border Line
+      ctx.strokeStyle = "#162607";
+      ctx.lineWidth = 3;
+      ctx.strokeRect(1, 1, canvas.width - 2, canvas.height - 2);
 
-      const fx = _getFruitX();
-      const fy = _getFruitY();
+      // Draw Pixelated Fruit (Dotted Square)
+      const fx = getFruitX() * CELL_SIZE;
+      const fy = getFruitY() * CELL_SIZE;
+      ctx.fillStyle = "#162607";
+      ctx.fillRect(fx + 4, fy + 4, CELL_SIZE - 8, CELL_SIZE - 8);
+      ctx.clearRect(fx + 7, fy + 7, CELL_SIZE - 14, CELL_SIZE - 14);
 
-      // Fruit (Hollow register mark)
-      ctx.strokeStyle = "#d84315";
-      ctx.lineWidth = 2;
-      ctx.strokeRect(fx * CELL + 4, fy * CELL + 4, CELL - 8, CELL - 8);
-      ctx.fillStyle = "#d84315";
-      ctx.fillRect(fx * CELL + 8, fy * CELL + 8, CELL - 16, CELL - 16);
-
-      // Body (Textured slate modules)
-      const bLen = _getBodyLength();
-      ctx.fillStyle = "#4a443a";
-      for (let i = 0; i < bLen; i++) {
-        const bx = _getBodyX(i);
-        const by = _getBodyY(i);
-        ctx.fillRect(bx * CELL + 2, by * CELL + 2, CELL - 4, CELL - 4);
+      // Draw Snake Body
+      const bodyLen = getBodyLength();
+      for (let i = 0; i < bodyLen; ++i) {
+        const bx = getBodyX(i) * CELL_SIZE;
+        const by = getBodyY(i) * CELL_SIZE;
+        ctx.fillStyle = "#162607";
+        ctx.fillRect(bx + 1, by + 1, CELL_SIZE - 2, CELL_SIZE - 2);
       }
 
-      // Head (High contrast cream monolith)
-      const hx = _getHeadX();
-      const hy = _getHeadY();
-      ctx.fillStyle = "#e8e3d9";
-      ctx.fillRect(hx * CELL + 1, hy * CELL + 1, CELL - 2, CELL - 2);
-    }
-
-    function tick() {
-      if (!_updateGame) return;
-
-      _updateGame();
-
-      const score = _getScore();
-      const dead = _isGameOver();
-      const len = _getBodyLength() + 1;
-
-      scoreVal.textContent = String(score).padStart(3, '0');
-      lenVal.textContent = String(len).padStart(2, '0');
-
-      if (dead) {
-        statusLine.textContent = "Halt // Impact Registered";
-        statusLine.classList.add("dead");
-      }
-
-      renderField();
+      // Draw Snake Head (Solid chunky pixel block with eyes)
+      const hx = getHeadX() * CELL_SIZE;
+      const hy = getHeadY() * CELL_SIZE;
+      ctx.fillStyle = "#162607";
+      ctx.fillRect(hx, hy, CELL_SIZE, CELL_SIZE);
+      ctx.fillStyle = "#97b538"; // Eye cutout
+      ctx.fillRect(hx + 4, hy + 4, 3, 3);
+      ctx.fillRect(hx + 13, hy + 4, 3, 3);
     }
   </script>
 </body>
