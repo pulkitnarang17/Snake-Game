@@ -1,0 +1,69 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+  <title>Snake II — 3310 Edition</title>
+  
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=VT323&display=swap" rel="stylesheet">
+  
+  <link rel="stylesheet" href="designSnakeGame.css">
+</head>
+<body>
+
+  <main class="phone-body">
+    <div class="speaker-grill" aria-hidden="true"></div>
+    <div class="brand-logo">NOKIA</div>
+
+    <!-- Screen Bezel & LCD -->
+    <section class="screen-bezel">
+      <div class="lcd-screen">
+        <header class="lcd-header">
+          <span>SNAKE II</span>
+          <span id="score">0000</span>
+        </header>
+
+        <canvas id="canvas" width="400" height="400" aria-label="Nokia Snake Game Screen"></canvas>
+
+        <footer class="lcd-footer">
+          <span id="msg">INITIALIZING</span>
+          <span aria-hidden="true">◄►▲▼</span>
+        </footer>
+      </div>
+    </section>
+
+    <!-- Keypad Controller -->
+    <nav class="keypad" aria-label="Phone Keypad Controls">
+      <div class="soft-keys">
+        <button type="button" class="btn-soft" id="btn-reset">RESET</button>
+        <button type="button" class="btn-soft" id="btn-play">PLAY</button>
+      </div>
+
+      <div class="grid-keys">
+        <button type="button" class="key" data-key="1"><span class="num">1</span><span class="sub">--</span></button>
+        <button type="button" class="key key-active-nav" data-dir="1" id="key-up"><span class="num">2</span><span class="sub">▲ UP</span></button>
+        <button type="button" class="key" data-key="3"><span class="num">3</span><span class="sub">DEF</span></button>
+
+        <button type="button" class="key key-active-nav" data-dir="3" id="key-left"><span class="num">4</span><span class="sub">◀ LEFT</span></button>
+        <button type="button" class="key" id="key-ok"><span class="num">5</span><span class="sub">OK</span></button>
+        <button type="button" class="key key-active-nav" data-dir="4" id="key-right"><span class="num">6</span><span class="sub">RIGHT ▶</span></button>
+
+        <button type="button" class="key" data-key="7"><span class="num">7</span><span class="sub">PQRS</span></button>
+        <button type="button" class="key key-active-nav" data-dir="2" id="key-down"><span class="num">8</span><span class="sub">▼ DOWN</span></button>
+        <button type="button" class="key" data-key="9"><span class="num">9</span><span class="sub">WXYZ</span></button>
+
+        <button type="button" class="key" data-key="*"><span class="num">*</span><span class="sub">+</span></button>
+        <button type="button" class="key" data-key="0"><span class="num">0</span><span class="sub">␣</span></button>
+        <button type="button" class="key" data-key="#"><span class="num">#</span><span class="sub">⇧</span></button>
+      </div>
+    </nav>
+  </main>
+
+  <!-- Emscripten Wasm Glue Script -->
+  <script src="snake.js"></script>
+  <!-- Game Logic Script -->
+  <script src="gameLogic.js"></script>
+</body>
+</html>
