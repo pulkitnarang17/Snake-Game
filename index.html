@@ -3,263 +3,533 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-  <title>C++ WebAssembly Snake</title>
+  <title>Ouroboros — Embedded C++ Arcade</title>
+  
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Chivo+Mono:ital,wght@0,300;0,400;0,600;0,800;1,400&family=Instrument+Serif:ital@0;1&display=swap" rel="stylesheet">
+
   <style>
+    :root {
+      --bg: #0e0d0b;
+      --paper: #171512;
+      --ink: #e8e3d9;
+      --muted: #807a70;
+      --rule: #292520;
+      --accent: #d84315;
+      --accent-dim: #3a150b;
+      --lead: #35a852;
+      
+      --font-serif: "Instrument Serif", Georgia, serif;
+      --font-mono: "Chivo Mono", monospace;
+      
+      --space-1: 4px;
+      --space-2: 8px;
+      --space-3: 16px;
+      --space-4: 24px;
+      --space-5: 32px;
+      --space-6: 48px;
+    }
+
     * {
       box-sizing: border-box;
       margin: 0;
       padding: 0;
-      user-select: none;
-      -webkit-user-select: none;
-      touch-action: manipulation;
+      -webkit-tap-highlight-color: transparent;
     }
+
     body {
-      background: #0f172a;
-      color: #f8fafc;
-      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+      background-color: var(--bg);
+      color: var(--ink);
+      font-family: var(--font-mono);
+      font-size: 13px;
+      line-height: 1.5;
+      letter-spacing: -0.01em;
+      min-height: 100vh;
+      display: flex;
+      flex-direction: column;
+      justify-content: space-between;
+      overflow-x: hidden;
+    }
+
+    /* Masthead */
+    header {
+      border-bottom: 1px solid var(--rule);
+      padding: var(--space-3) var(--space-4);
+      display: flex;
+      justify-content: space-between;
+      align-items: baseline;
+      background: var(--bg);
+    }
+
+    .brand {
+      display: flex;
+      align-items: baseline;
+      gap: var(--space-2);
+    }
+
+    .brand h1 {
+      font-family: var(--font-serif);
+      font-weight: 400;
+      font-size: 28px;
+      letter-spacing: -0.02em;
+      line-height: 1;
+      color: var(--ink);
+    }
+
+    .badge-wasm {
+      font-size: 10px;
+      letter-spacing: 0.08em;
+      text-transform: uppercase;
+      padding: 2px 6px;
+      border: 1px solid var(--rule);
+      color: var(--muted);
+      background: var(--paper);
+    }
+
+    .clock {
+      color: var(--muted);
+      font-size: 11px;
+      font-variant-numeric: tabular-nums;
+    }
+
+    /* Main Editorial Stage */
+    main {
+      flex: 1;
+      display: grid;
+      grid-template-columns: 1fr;
+      max-width: 1040px;
+      width: 100%;
+      margin: 0 auto;
+      padding: var(--space-4);
+      gap: var(--space-5);
+    }
+
+    @media (min-width: 820px) {
+      main {
+        grid-template-columns: 310px 1fr;
+        padding: var(--space-6) var(--space-4);
+        align-items: start;
+      }
+    }
+
+    /* Sidebar Column */
+    .col-spec {
+      display: flex;
+      flex-direction: column;
+      gap: var(--space-4);
+    }
+
+    .manifesto {
+      font-family: var(--font-serif);
+      font-size: 20px;
+      line-height: 1.25;
+      color: var(--muted);
+      font-style: italic;
+    }
+
+    .manifesto span {
+      color: var(--ink);
+      font-style: normal;
+    }
+
+    .telemetry-card {
+      border: 1px solid var(--rule);
+      background: var(--paper);
+      padding: var(--space-3);
+    }
+
+    .telemetry-row {
+      display: flex;
+      justify-content: space-between;
+      padding: var(--space-2) 0;
+      border-bottom: 1px dashed var(--rule);
+      font-size: 11px;
+    }
+
+    .telemetry-row:last-child {
+      border-bottom: none;
+      padding-bottom: 0;
+    }
+
+    .telemetry-row span:first-child {
+      color: var(--muted);
+      text-transform: uppercase;
+      letter-spacing: 0.04em;
+    }
+
+    .telemetry-row span:last-child {
+      font-weight: 600;
+      color: var(--ink);
+      font-variant-numeric: tabular-nums;
+    }
+
+    .telemetry-row.highlight span:last-child {
+      color: var(--accent);
+    }
+
+    .manual {
+      color: var(--muted);
+      font-size: 11px;
+      line-height: 1.6;
+    }
+
+    .manual kbd {
+      background: var(--bg);
+      border: 1px solid var(--rule);
+      padding: 1px 5px;
+      color: var(--ink);
+      font-family: var(--font-mono);
+      font-size: 10px;
+    }
+
+    /* Board Presentation */
+    .col-screen {
       display: flex;
       flex-direction: column;
       align-items: center;
-      justify-content: center;
-      min-height: 100vh;
-      padding: 10px;
-      overflow: hidden;
-    }
-    h1 {
-      font-size: clamp(20px, 4vw, 26px);
-      margin-bottom: 4px;
-      letter-spacing: 1px;
-    }
-    #stats {
-      font-size: clamp(15px, 3.5vw, 18px);
-      margin-bottom: 8px;
-      color: #38bdf8;
-      font-weight: 600;
-    }
-    #canvas-container {
-      width: min(90vw, 380px);
-      height: min(90vw, 380px);
-      position: relative;
-    }
-    canvas {
-      width: 100%;
-      height: 100%;
-      border: 3px solid #334155;
-      border-radius: 12px;
-      background: #020617;
-      box-shadow: 0 10px 25px rgba(0, 0, 0, 0.6);
-      display: block;
-    }
-    #msg {
-      margin-top: 10px;
-      font-size: 13px;
-      font-weight: 600;
-      color: #94a3b8;
-      height: 20px;
-      text-align: center;
+      gap: var(--space-3);
     }
 
-    /* Mobile Virtual D-Pad */
-    .controls {
-      margin-top: 14px;
-      display: grid;
-      grid-template-columns: repeat(3, 56px);
-      grid-template-rows: repeat(3, 48px);
-      gap: 6px;
-      justify-content: center;
+    .viewport-bezel {
+      border: 1px solid var(--rule);
+      background: var(--paper);
+      padding: var(--space-2);
+      width: 100%;
+      max-width: 440px;
+      position: relative;
     }
-    .btn {
-      background: #1e293b;
-      border: 1px solid #475569;
-      color: #f8fafc;
-      font-size: 18px;
-      font-weight: bold;
-      border-radius: 10px;
+
+    .viewport-bezel::before,
+    .viewport-bezel::after {
+      content: "•";
+      position: absolute;
+      color: var(--rule);
+      font-size: 14px;
+      line-height: 0;
+    }
+    .viewport-bezel::before { top: 6px; left: 6px; }
+    .viewport-bezel::after { bottom: 6px; right: 6px; }
+
+    #stage {
+      display: block;
+      width: 100%;
+      aspect-ratio: 1 / 1;
+      background: var(--bg);
+      border: 1px solid var(--rule);
+      cursor: crosshair;
+    }
+
+    .state-banner {
+      width: 100%;
+      max-width: 440px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding: var(--space-2) var(--space-1);
+      font-size: 11px;
+      letter-spacing: 0.04em;
+      text-transform: uppercase;
+    }
+
+    #status-line {
+      color: var(--lead);
+    }
+
+    #status-line.dead {
+      color: var(--accent);
+    }
+
+    /* Tactile Thumb Deck */
+    .dpad {
+      display: grid;
+      grid-template-columns: repeat(3, 52px);
+      grid-template-rows: repeat(2, 44px);
+      gap: var(--space-1);
+      margin-top: var(--space-2);
+    }
+
+    @media (min-width: 820px) {
+      .dpad {
+        display: none;
+      }
+    }
+
+    .key {
+      background: var(--paper);
+      border: 1px solid var(--rule);
+      color: var(--ink);
+      font-family: var(--font-mono);
+      font-size: 12px;
       display: flex;
       align-items: center;
       justify-content: center;
-      touch-action: manipulation;
       cursor: pointer;
-      transition: background 0.1s;
-    }
-    .btn:active {
-      background: #38bdf8;
-      color: #0f172a;
-    }
-    .btn-up    { grid-column: 2; grid-row: 1; }
-    .btn-left  { grid-column: 1; grid-row: 2; }
-    .btn-down  { grid-column: 2; grid-row: 2; }
-    .btn-right { grid-column: 3; grid-row: 2; }
-    .btn-reset { 
-      grid-column: 1 / span 3; 
-      grid-row: 3; 
-      font-size: 13px; 
-      background: #334155; 
-      height: 38px;
     }
 
-    /* Hide D-Pad on large desktop screens if desired, or keep for testing */
-    @media (min-height: 700px) and (min-width: 600px) {
-      .controls {
-        margin-top: 18px;
-      }
+    .key:active {
+      background: var(--ink);
+      color: var(--bg);
+    }
+
+    .key-u { grid-column: 2; grid-row: 1; }
+    .key-l { grid-column: 1; grid-row: 2; }
+    .key-d { grid-column: 2; grid-row: 2; }
+    .key-r { grid-column: 3; grid-row: 2; }
+
+    /* Colophon / Bottom Line */
+    footer {
+      border-top: 1px solid var(--rule);
+      padding: var(--space-3) var(--space-4);
+      display: flex;
+      flex-wrap: wrap;
+      justify-content: space-between;
+      gap: var(--space-2);
+      color: var(--muted);
+      font-size: 11px;
+      background: var(--bg);
+    }
+
+    footer a {
+      color: var(--muted);
+      text-decoration: underline;
+      text-underline-offset: 3px;
+    }
+
+    footer a:hover {
+      color: var(--ink);
     }
   </style>
 </head>
 <body>
 
-  <h1>C++ WebAssembly Snake</h1>
-  <div id="stats">Score: <span id="score">0</span></div>
-  
-  <div id="canvas-container">
-    <canvas id="canvas" width="400" height="400"></canvas>
-  </div>
-  
-  <div id="msg">Loading C++ Engine...</div>
+  <header>
+    <div class="brand">
+      <h1>Ouroboros</h1>
+      <span class="badge-wasm">WASM // C++17</span>
+    </div>
+    <div class="clock" id="session-clock">00:00:00</div>
+  </header>
 
-  <!-- Mobile On-Screen Controls -->
-  <div class="controls">
-    <button class="btn btn-up" ontouchstart="handleMove(1)" onclick="handleMove(1)">▲</button>
-    <button class="btn btn-left" ontouchstart="handleMove(3)" onclick="handleMove(3)">◀</button>
-    <button class="btn btn-down" ontouchstart="handleMove(2)" onclick="handleMove(2)">▼</button>
-    <button class="btn btn-right" ontouchstart="handleMove(4)" onclick="handleMove(4)">▶</button>
-    <button class="btn btn-reset" ontouchstart="handleReset()" onclick="handleReset()">RESTART</button>
-  </div>
+  <main>
+    <aside class="col-spec">
+      <p class="manifesto">
+        Discrete deterministic motion rendered on an orthogonal 20×20 grid. 
+        <span>Compiled directly from native heap-allocated memory.</span>
+      </p>
+
+      <div class="telemetry-card">
+        <div class="telemetry-row highlight">
+          <span>Tally</span>
+          <span id="stat-score">000</span>
+        </div>
+        <div class="telemetry-row">
+          <span>Payload Units</span>
+          <span id="stat-len">00</span>
+        </div>
+        <div class="telemetry-row">
+          <span>Engine Status</span>
+          <span id="stat-engine">Mounting</span>
+        </div>
+        <div class="telemetry-row">
+          <span>Cycle Rate</span>
+          <span>8.00 Hz</span>
+        </div>
+      </div>
+
+      <div class="manual">
+        Vector shifts registered via <kbd>W</kbd> <kbd>A</kbd> <kbd>S</kbd> <kbd>D</kbd> or cursor keys. Re-arm dead engine with <kbd>R</kbd> or screen tap.
+      </div>
+    </aside>
+
+    <section class="col-screen">
+      <div class="viewport-bezel">
+        <canvas id="stage" width="400" height="400" aria-label="Monochrome Snake grid running WebAssembly"></canvas>
+      </div>
+
+      <div class="state-banner">
+        <span id="status-line">Sys.Ready</span>
+        <span style="color: var(--muted)">20x20 Field</span>
+      </div>
+
+      <div class="dpad" role="group" aria-label="Directional controls">
+        <button class="key key-u" onclick="inputDir(1)" aria-label="North">N</button>
+        <button class="key key-l" onclick="inputDir(3)" aria-label="West">W</button>
+        <button class="key key-d" onclick="inputDir(2)" aria-label="South">S</button>
+        <button class="key key-r" onclick="inputDir(4)" aria-label="East">E</button>
+      </div>
+    </section>
+  </main>
+
+  <footer>
+    <div>Execution Thread: Direct WebAssembly VM</div>
+    <div>Zero Garbage Collection Spikes</div>
+  </footer>
 
   <script src="snake.js"></script>
-
   <script>
-    const canvas = document.getElementById("canvas");
+    const canvas = document.getElementById("stage");
     const ctx = canvas.getContext("2d");
-    const scoreEl = document.getElementById("score");
-    const msgEl = document.getElementById("msg");
+    
+    const scoreVal = document.getElementById("stat-score");
+    const lenVal = document.getElementById("stat-len");
+    const engineVal = document.getElementById("stat-engine");
+    const statusLine = document.getElementById("status-line");
+    const clockEl = document.getElementById("session-clock");
 
-    const CELL_SIZE = 20;
+    const CELL = 20;
+    const GRID_SIZE = 20;
 
     let wasm;
-    let initGame, setDirection, updateGame;
-    let getHeadX, getHeadY, getFruitX, getFruitY;
-    let getScore, isGameOver, getBodyLength, getBodyX, getBodyY;
+    let _initGame, _setDirection, _updateGame;
+    let _getHeadX, _getHeadY, _getFruitX, _getFruitY;
+    let _getScore, _isGameOver, _getBodyLength, _getBodyX, _getBodyY;
 
-    // Load C++ Wasm module
-    createSnakeModule().then((module) => {
-      wasm = module;
+    // Session stopwatch
+    const startTime = Date.now();
+    setInterval(() => {
+      const elapsed = Math.floor((Date.now() - startTime) / 1000);
+      const h = String(Math.floor(elapsed / 3600)).padStart(2, '0');
+      const m = String(Math.floor((elapsed % 3600) / 60)).padStart(2, '0');
+      const s = String(elapsed % 60).padStart(2, '0');
+      clockEl.textContent = `${h}:${m}:${s}`;
+    }, 1000);
 
-      initGame = wasm.cwrap('initGame', null, []);
-      setDirection = wasm.cwrap('setDirection', null, ['number']);
-      updateGame = wasm.cwrap('updateGame', null, []);
-      getHeadX = wasm.cwrap('getHeadX', 'number', []);
-      getHeadY = wasm.cwrap('getHeadY', 'number', []);
-      getFruitX = wasm.cwrap('getFruitX', 'number', []);
-      getFruitY = wasm.cwrap('getFruitY', 'number', []);
-      getScore = wasm.cwrap('getScore', 'number', []);
-      isGameOver = wasm.cwrap('isGameOver', 'number', []);
-      getBodyLength = wasm.cwrap('getBodyLength', 'number', []);
-      getBodyX = wasm.cwrap('getBodyX', 'number', ['number']);
-      getBodyY = wasm.cwrap('getBodyY', 'number', ['number']);
+    createSnakeModule().then((mod) => {
+      wasm = mod;
 
-      initGame();
-      msgEl.innerText = "Swipe, use D-pad, or W/A/S/D";
+      _initGame = wasm.cwrap('initGame', null, []);
+      _setDirection = wasm.cwrap('setDirection', null, ['number']);
+      _updateGame = wasm.cwrap('updateGame', null, []);
+      _getHeadX = wasm.cwrap('getHeadX', 'number', []);
+      _getHeadY = wasm.cwrap('getHeadY', 'number', []);
+      _getFruitX = wasm.cwrap('getFruitX', 'number', []);
+      _getFruitY = wasm.cwrap('getFruitY', 'number', []);
+      _getScore = wasm.cwrap('getScore', 'number', []);
+      _isGameOver = wasm.cwrap('isGameOver', 'number', []);
+      _getBodyLength = wasm.cwrap('getBodyLength', 'number', []);
+      _getBodyX = wasm.cwrap('getBodyX', 'number', ['number']);
+      _getBodyY = wasm.cwrap('getBodyY', 'number', ['number']);
 
-      setInterval(gameTick, 125);
-    }).catch(err => {
+      _initGame();
+      engineVal.textContent = "Nominal";
+      statusLine.textContent = "Live Stream Active";
+
+      setInterval(tick, 125);
+    }).catch((err) => {
+      engineVal.textContent = "Fault";
+      statusLine.textContent = "Kernel Panic";
+      statusLine.classList.add("dead");
       console.error(err);
-      msgEl.innerText = "Failed to load C++ engine.";
     });
 
-    // Helper functions for inputs
-    function handleMove(dir) {
-      if (setDirection) setDirection(dir);
+    function inputDir(d) {
+      if (_setDirection) _setDirection(d);
     }
 
-    function handleReset() {
-      if (initGame) initGame();
+    function rearm() {
+      if (_initGame) {
+        _initGame();
+        statusLine.textContent = "Live Stream Active";
+        statusLine.classList.remove("dead");
+      }
     }
 
-    // Keyboard controls (Desktop)
     window.addEventListener("keydown", (e) => {
-      const key = e.key.toLowerCase();
-      if (key === 'w' || key === 'arrowup') handleMove(1);
-      else if (key === 's' || key === 'arrowdown') handleMove(2);
-      else if (key === 'a' || key === 'arrowleft') handleMove(3);
-      else if (key === 'd' || key === 'arrowright') handleMove(4);
-      else if (key === 'r') handleReset();
+      const k = e.key.toLowerCase();
+      if (k === 'w' || k === 'arrowup') inputDir(1);
+      else if (k === 's' || k === 'arrowdown') inputDir(2);
+      else if (k === 'a' || k === 'arrowleft') inputDir(3);
+      else if (k === 'd' || k === 'arrowright') inputDir(4);
+      else if (k === 'r') rearm();
     });
 
-    // Touch Swipe Controls (Mobile)
-    let touchStartX = 0;
-    let touchStartY = 0;
-
-    window.addEventListener("touchstart", (e) => {
-      touchStartX = e.changedTouches[0].screenX;
-      touchStartY = e.changedTouches[0].screenY;
+    // Mobile swipe gestures
+    let x0 = null, y0 = null;
+    canvas.addEventListener("touchstart", (e) => {
+      x0 = e.touches[0].clientX;
+      y0 = e.touches[0].clientY;
     }, { passive: true });
 
-    window.addEventListener("touchend", (e) => {
-      const diffX = e.changedTouches[0].screenX - touchStartX;
-      const diffY = e.changedTouches[0].screenY - touchStartY;
-      const absX = Math.abs(diffX);
-      const absY = Math.abs(diffY);
-
-      // Minimum swipe distance threshold (30px)
-      if (Math.max(absX, absY) > 30) {
-        if (absX > absY) {
-          handleMove(diffX > 0 ? 4 : 3); // Right : Left
-        } else {
-          handleMove(diffY > 0 ? 2 : 1); // Down : Up
-        }
+    canvas.addEventListener("touchend", (e) => {
+      if (!x0 || !y0) return;
+      const dx = e.changedTouches[0].clientX - x0;
+      const dy = e.changedTouches[0].clientY - y0;
+      
+      if (Math.hypot(dx, dy) < 20) {
+        rearm();
+        return;
       }
-    }, { passive: true });
-
-    function gameTick() {
-      updateGame();
-
-      const score = getScore();
-      const over = isGameOver();
-      scoreEl.innerText = score;
-
-      if (over) {
-        msgEl.innerText = "Game Over! Tap RESTART or press 'R'";
-        msgEl.style.color = "#f43f5e";
+      
+      if (Math.abs(dx) > Math.abs(dy)) {
+        inputDir(dx > 0 ? 4 : 3);
       } else {
-        msgEl.innerText = "Swipe screen or use buttons";
-        msgEl.style.color = "#94a3b8";
+        inputDir(dy > 0 ? 2 : 1);
       }
+      x0 = null;
+      y0 = null;
+    }, { passive: true });
 
-      // Render
-      ctx.fillStyle = "#020617";
+    function renderField() {
+      ctx.fillStyle = "#0e0d0b";
       ctx.fillRect(0, 0, canvas.width, canvas.height);
 
-      // Fruit
-      ctx.fillStyle = "#ef4444";
+      // Fine coordinate grid lines
+      ctx.strokeStyle = "#1b1916";
+      ctx.lineWidth = 1;
       ctx.beginPath();
-      ctx.arc(
-        getFruitX() * CELL_SIZE + CELL_SIZE / 2,
-        getFruitY() * CELL_SIZE + CELL_SIZE / 2,
-        CELL_SIZE / 2.3, 0, Math.PI * 2
-      );
-      ctx.fill();
+      for (let i = 0; i <= GRID_SIZE; i++) {
+        ctx.moveTo(i * CELL, 0);
+        ctx.lineTo(i * CELL, canvas.height);
+        ctx.moveTo(0, i * CELL);
+        ctx.lineTo(canvas.width, i * CELL);
+      }
+      ctx.stroke();
 
-      // Snake Body
-      ctx.fillStyle = "#22c55e";
-      const bodyLen = getBodyLength();
-      for (let i = 0; i < bodyLen; ++i) {
-        ctx.fillRect(
-          getBodyX(i) * CELL_SIZE + 1,
-          getBodyY(i) * CELL_SIZE + 1,
-          CELL_SIZE - 2,
-          CELL_SIZE - 2
-        );
+      const fx = _getFruitX();
+      const fy = _getFruitY();
+
+      // Fruit (Hollow register mark)
+      ctx.strokeStyle = "#d84315";
+      ctx.lineWidth = 2;
+      ctx.strokeRect(fx * CELL + 4, fy * CELL + 4, CELL - 8, CELL - 8);
+      ctx.fillStyle = "#d84315";
+      ctx.fillRect(fx * CELL + 8, fy * CELL + 8, CELL - 16, CELL - 16);
+
+      // Body (Textured slate modules)
+      const bLen = _getBodyLength();
+      ctx.fillStyle = "#4a443a";
+      for (let i = 0; i < bLen; i++) {
+        const bx = _getBodyX(i);
+        const by = _getBodyY(i);
+        ctx.fillRect(bx * CELL + 2, by * CELL + 2, CELL - 4, CELL - 4);
       }
 
-      // Snake Head
-      ctx.fillStyle = "#38bdf8";
-      ctx.fillRect(
-        getHeadX() * CELL_SIZE,
-        getHeadY() * CELL_SIZE,
-        CELL_SIZE,
-        CELL_SIZE
-      );
+      // Head (High contrast cream monolith)
+      const hx = _getHeadX();
+      const hy = _getHeadY();
+      ctx.fillStyle = "#e8e3d9";
+      ctx.fillRect(hx * CELL + 1, hy * CELL + 1, CELL - 2, CELL - 2);
+    }
+
+    function tick() {
+      if (!_updateGame) return;
+
+      _updateGame();
+
+      const score = _getScore();
+      const dead = _isGameOver();
+      const len = _getBodyLength() + 1;
+
+      scoreVal.textContent = String(score).padStart(3, '0');
+      lenVal.textContent = String(len).padStart(2, '0');
+
+      if (dead) {
+        statusLine.textContent = "Halt // Impact Registered";
+        statusLine.classList.add("dead");
+      }
+
+      renderField();
     }
   </script>
 </body>
