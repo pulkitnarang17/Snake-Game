@@ -1,11 +1,14 @@
 :root {
-  --lcd-bg: #97b538;
-  --lcd-pixel: #162607;
-  --phone-body: #1e3a5f;
-  --phone-trim: #c4c9d0;
-  --btn-color: #314455;
-  --btn-label: #e2e8f0;
-  --font-retro: 'VT323', monospace;
+  --lcd-bg: #8ea832;
+  --lcd-bg-glow: #9cbd38;
+  --lcd-ink: #1c270a;
+  --phone-blue: #1c3554;
+  --phone-blue-dark: #0f2035;
+  --faceplate-silver: #c5ccd4;
+  --faceplate-dark: #9aa2ac;
+  --key-rubber: #d6dbe0;
+  --key-rubber-dark: #a8b0b8;
+  --font-lcd: 'VT323', monospace;
 }
 
 * {
@@ -18,173 +21,270 @@
 }
 
 body {
-  background: #11141a;
+  background: radial-gradient(circle at 50% 20%, #20242b 0%, #0d0f12 100%);
   min-height: 100vh;
   display: flex;
   flex-direction: column;
   align-items: center;
   justify-content: center;
-  font-family: var(--font-retro);
-  padding: 10px;
+  font-family: var(--font-lcd);
+  padding: 18px 12px;
+  overflow-x: hidden;
 }
 
-/* Outer Phone Shell */
-.phone-body {
-  background: var(--phone-body);
-  border: 4px solid #0f1c2d;
-  border-radius: 42px 42px 55px 55px;
-  padding: 24px 20px 28px;
+/* 3310 Outer Curved Chassis */
+.nokia-3310 {
+  position: relative;
+  background: linear-gradient(180deg, #244166 0%, #172c45 60%, #102033 100%);
+  border-radius: 46px 46px 65px 65px;
+  padding: 22px 18px 24px;
   width: 100%;
-  max-width: 340px;
+  max-width: 330px;
+  box-shadow: 
+    0 25px 50px -10px rgba(0, 0, 0, 0.85),
+    0 10px 20px rgba(0, 0, 0, 0.5),
+    inset 0 3px 6px rgba(255, 255, 255, 0.3),
+    inset 0 -6px 12px rgba(0, 0, 0, 0.6);
   display: flex;
   flex-direction: column;
   align-items: center;
-  box-shadow: 0 20px 50px rgba(0, 0, 0, 0.8), inset 0 2px 4px rgba(255, 255, 255, 0.2);
+  border: 1px solid #2d4e78;
 }
 
-.speaker-grill {
-  width: 48px;
-  height: 6px;
-  background: #0f1c2d;
-  border-radius: 3px;
-  margin-bottom: 12px;
-}
-
-.brand-logo {
-  color: var(--phone-trim);
-  font-family: sans-serif;
-  font-weight: 800;
-  letter-spacing: 4px;
-  font-size: 13px;
-  margin-bottom: 12px;
-  text-transform: uppercase;
-  opacity: 0.85;
-}
-
-/* Nokia Monochrome Screen Bezel */
-.screen-bezel {
-  background: #505c68;
-  border: 3px solid #28333e;
-  border-radius: 14px;
-  padding: 10px;
-  width: 100%;
-  box-shadow: inset 0 4px 10px rgba(0, 0, 0, 0.5);
-}
-
-/* Green Monochrome LCD Display */
-.lcd-screen {
-  background: var(--lcd-bg);
-  border: 2px solid #5d741d;
+/* Top Earpiece Grill */
+.earpiece {
+  width: 44px;
+  height: 5px;
+  background: #09131d;
   border-radius: 4px;
-  padding: 6px 8px;
+  box-shadow: inset 0 2px 2px rgba(0, 0, 0, 0.8), 0 1px 1px rgba(255, 255, 255, 0.15);
+  margin-bottom: 10px;
+}
+
+/* Nokia Branding */
+.brand {
+  color: #bac4ce;
+  font-family: 'Arial Black', Impact, sans-serif;
+  font-size: 13px;
+  letter-spacing: 4px;
+  text-transform: uppercase;
+  text-shadow: 0 -1px 0 rgba(0, 0, 0, 0.8), 0 1px 1px rgba(255, 255, 255, 0.4);
+  margin-bottom: 12px;
+}
+
+/* Signature Silver/Grey Faceplate Frame */
+.faceplate {
+  width: 100%;
+  background: linear-gradient(180deg, var(--faceplate-silver) 0%, var(--faceplate-dark) 100%);
+  border-radius: 20px 20px 36px 36px;
+  padding: 10px 10px 14px;
+  box-shadow: 
+    inset 0 2px 3px rgba(255, 255, 255, 0.6),
+    inset 0 -2px 4px rgba(0, 0, 0, 0.4),
+    0 4px 10px rgba(0, 0, 0, 0.4);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
+/* Deep Glass Bezel */
+.screen-well {
+  width: 100%;
+  background: #14171a;
+  border-radius: 8px;
+  padding: 8px;
+  box-shadow: 
+    inset 0 4px 8px rgba(0, 0, 0, 0.9),
+    0 1px 1px rgba(255, 255, 255, 0.3);
   position: relative;
-  box-shadow: inset 0 0 10px rgba(0, 0, 0, 0.2);
+  overflow: hidden;
+}
+
+/* Reflective Glass Sheen */
+.screen-well::after {
+  content: '';
+  position: absolute;
+  top: -40%;
+  left: -60%;
+  width: 200%;
+  height: 120%;
+  background: linear-gradient(135deg, rgba(255, 255, 255, 0.18) 0%, rgba(255, 255, 255, 0) 55%);
+  pointer-events: none;
+  transform: rotate(-15deg);
+}
+
+/* Green Monochrome Dot-Matrix Screen */
+.lcd-display {
+  background: radial-gradient(circle at center, var(--lcd-bg-glow) 0%, var(--lcd-bg) 100%);
+  border-radius: 3px;
+  padding: 6px 8px;
+  box-shadow: inset 0 2px 6px rgba(0, 0, 0, 0.25);
+  position: relative;
+}
+
+.lcd-display::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  background: repeating-linear-gradient(
+    0deg,
+    rgba(0, 0, 0, 0.04) 0px,
+    rgba(0, 0, 0, 0.04) 1px,
+    transparent 1px,
+    transparent 2px
+  );
+  pointer-events: none;
 }
 
 .lcd-header {
   display: flex;
   justify-content: space-between;
-  color: var(--lcd-pixel);
-  font-size: 20px;
+  color: var(--lcd-ink);
+  font-size: 19px;
   line-height: 1;
-  margin-bottom: 4px;
-  border-bottom: 2px dashed #7a942a;
   padding-bottom: 2px;
+  border-bottom: 2px solid var(--lcd-ink);
+  margin-bottom: 4px;
 }
 
 canvas {
   display: block;
   width: 100%;
   aspect-ratio: 1 / 1;
-  background: var(--lcd-bg);
+  background: transparent;
   image-rendering: pixelated;
 }
 
 .lcd-footer {
   display: flex;
   justify-content: space-between;
-  color: var(--lcd-pixel);
+  color: var(--lcd-ink);
   font-size: 16px;
-  margin-top: 4px;
   font-weight: bold;
+  margin-top: 4px;
 }
 
-/* Keypad Layout */
-.keypad {
+/* Navigation & Soft Keypad Row */
+.nav-cluster {
   width: 100%;
-  margin-top: 18px;
+  margin-top: 10px;
   display: flex;
   flex-direction: column;
-  gap: 8px;
+  align-items: center;
+  gap: 6px;
 }
 
-.soft-keys {
+.navi-key {
+  background: linear-gradient(180deg, #2b496f 0%, #15273d 100%);
+  color: #e2e8f0;
+  border: 1px solid #111e2d;
+  border-radius: 14px;
+  width: 90px;
+  height: 24px;
+  font-family: sans-serif;
+  font-size: 9px;
+  font-weight: 800;
+  letter-spacing: 1px;
+  box-shadow: 
+    0 3px 0 #080f17,
+    inset 0 1px 1px rgba(255, 255, 255, 0.35);
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.navi-key:active {
+  transform: translateY(2px);
+  box-shadow: 0 1px 0 #080f17;
+}
+
+.soft-buttons {
+  width: 100%;
   display: flex;
   justify-content: space-between;
-  margin-bottom: 4px;
   padding: 0 8px;
 }
 
-.btn-soft {
-  background: #475a6c;
-  color: var(--btn-label);
-  border: none;
-  border-radius: 8px;
-  width: 60px;
-  height: 26px;
+.soft-btn {
+  background: linear-gradient(180deg, var(--key-rubber) 0%, var(--key-rubber-dark) 100%);
+  border: 1px solid #848c96;
+  border-radius: 8px 8px 14px 14px;
+  width: 62px;
+  height: 22px;
   font-family: sans-serif;
   font-size: 10px;
-  font-weight: bold;
+  font-weight: 800;
+  color: #2a3440;
+  box-shadow: 0 3px 0 #6d757e, inset 0 1px 1px rgba(255, 255, 255, 0.6);
   cursor: pointer;
-  box-shadow: 0 3px 0 #1e2832;
 }
 
-.btn-soft:active {
+.soft-btn:active {
   transform: translateY(2px);
-  box-shadow: 0 1px 0 #1e2832;
+  box-shadow: 0 1px 0 #6d757e;
 }
 
-.grid-keys {
+/* 12-Key Numeric Keypad Grid */
+.keypad-grid {
+  width: 100%;
+  margin-top: 14px;
   display: grid;
   grid-template-columns: repeat(3, 1fr);
-  gap: 7px;
+  gap: 9px 8px;
+  padding: 0 6px;
 }
 
 .key {
-  background: var(--btn-color);
-  color: var(--btn-label);
-  border: 1px solid #1a2530;
-  border-radius: 12px;
+  background: linear-gradient(180deg, #e4e8ec 0%, #bdc4cc 100%);
+  border: 1px solid #9ba3ac;
+  border-radius: 14px;
   height: 44px;
   display: flex;
   flex-direction: column;
   align-items: center;
   justify-content: center;
   cursor: pointer;
-  box-shadow: 0 4px 0 #151f28;
-  transition: transform 0.05s;
+  box-shadow: 
+    0 4px 0 #7b848e,
+    0 6px 6px rgba(0, 0, 0, 0.25),
+    inset 0 1px 1px rgba(255, 255, 255, 0.8);
+  color: #172433;
+  transition: transform 0.05s ease, box-shadow 0.05s ease;
 }
 
 .key:active {
   transform: translateY(3px);
-  box-shadow: 0 1px 0 #151f28;
-  background: #445c74;
+  box-shadow: 
+    0 1px 0 #7b848e,
+    inset 0 1px 2px rgba(0, 0, 0, 0.2);
+  background: #c5ccd4;
 }
 
 .key .num {
-  font-size: 20px;
+  font-size: 21px;
   line-height: 1;
   font-weight: bold;
 }
 
 .key .sub {
-  font-family: sans-serif;
+  font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
   font-size: 8px;
+  font-weight: 700;
   letter-spacing: 0.5px;
-  opacity: 0.6;
+  color: #4b5866;
 }
 
-.key-active-nav {
-  background: #25394d;
-  border-color: #4a6785;
+.key-dir .sub {
+  color: #0b1a2d;
+}
+
+/* Bottom Microphone Hole */
+.mic-hole {
+  width: 5px;
+  height: 5px;
+  background: #09131d;
+  border-radius: 50%;
+  margin-top: 14px;
+  box-shadow: inset 0 1px 1px #000, 0 1px 1px rgba(255, 255, 255, 0.15);
 }
